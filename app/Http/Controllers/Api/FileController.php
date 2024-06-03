@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use App\Jobs\FetchFilesData;
 use Illuminate\Support\Facades\Cache;
+use App\Http\Resources\FileCollection;
 use App\Services\FileStructureService;
 
 class FileController extends Controller
@@ -14,8 +15,8 @@ class FileController extends Controller
     {
         $this->fileStructureService = $fileStructureService;
     }
-
-    public function index(): array
+    
+    public function index(): FileCollection
     {
         $cacheKey = 'files_urls';
 
@@ -27,7 +28,10 @@ class FileController extends Controller
             $data = [];
         }
 
-        return $this->fileStructureService->setFileStructureFromUrls($data);
+        $filesStructure = $this->fileStructureService->setFileStructureFromUrls($data);
+
+        return new FileCollection(collect($filesStructure));
 
     }
+
 }
