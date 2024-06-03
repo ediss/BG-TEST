@@ -2,8 +2,26 @@
 
 namespace App\Services;
 
+use App\Jobs\FetchFilesData;
+use Illuminate\Support\Facades\Cache;
+
 class FileStructureService
 {
+    public function getCachedFilesOrDispatchJob() {
+        $cacheKey = 'files_urls';
+
+        if (Cache::has($cacheKey)) {
+            $data = Cache::get($cacheKey);
+        } else {
+            FetchFilesData::dispatch();
+
+            $data = [];
+        }
+
+        return $data;
+    }
+
+
     public function setFileStructureFromUrls(array $data): array
     {
         $fileStructure = [];
